@@ -65,6 +65,5 @@ nosetests.xml
 .idea
 .iml
 
-test_results
 market-*.log
 market-*.json
