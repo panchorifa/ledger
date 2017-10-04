@@ -44,17 +44,17 @@ class Ledger(object):
         self.day_balances[day] = b
 
     def _process_party(self, date, party, amount):
-        current_balance = self.update_current_balance(party, amount)
+        current_balance = self._update_current_balance(party, amount)
         self._update_day_balance(date, party, current_balance)
 
     def _process_purchase(self, date, payer, payee, amount):
-        self.process_party(date, payer, -amount)
-        self.process_party(date, payee, amount)
+        self._process_party(date, payer, -amount)
+        self._process_party(date, payee, amount)
 
     def _process_purchase_text(self, purchase):
         [date, payer, payee, amount] = purchase.split(',')
-        xdate = dt.strptime(date, "%y-%m-%d")
-        if self.last_date && xdate < self.last_date:
+        xdate = dt.strptime(date, "%Y-%m-%d")
+        if self.last_date and xdate < self.last_date:
             raise LedgerOrderError()
         self._process_purchase(date, payer, payee, Decimal(amount))
         self.last_date = xdate
