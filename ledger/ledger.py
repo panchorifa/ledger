@@ -15,38 +15,64 @@ class Ledger(object):
 
     Raises ``LedgerOrderError`` when purchases are not ordered from least to
     most recent.
-
-    Exposes ``balances`` with final or current balances for all parties.
-    ie: ledger.balances['john']
-
-    Exposes ``day_balances`` with day balances for all parties.
-    ie: ledger.day_balances['2015-01-16']['john']
     """
 
     def __init__(self, file_path):
         """
-        Ledger that exposes balances and daily balances for the given file.
+        Ledger that exposes balances and daily balances for all parties included
+        in the given file.
 
         :param file_path: Path to file with purchases to be processed
         """
-        self.balances = {}
-        self.day_balances = {}
+        self._balances = {}
+        self._day_balances = {}
         self.last_date = None
 
         with open(file_path) as ledger:
             for purchase in ledger:
                 self._process_purchase_text(purchase)
 
+    def balance(self, party):
+        """
+        Exposes final or current balance for the given party.
+        ie: ledger.balance('john')
+
+        :param party: desired party
+        """
+        if party in self._balances:
+            return self._balances[party]
+        return 0
+
+    def day_balance(self, day, party):
+        """
+        Exposes final or current balance for the given party.
+        ie: ledger.balance('john')
+
+        Returns last balance for any future dates outside the known
+        transaction dates.
+
+        :param day: day date with format 'YYYY-mm-dd'
+        :param party: desired party
+        """
+        if day in self._day_balances and party in self._day_balances[day]:
+            return self._day_balances[day][party]
+        target_date = dt.strptime(day, "%Y-%m-%d")
+        if target_date > self.last_date:
+            target_date_str = self.last_date.strftime("%Y-%m-%d")
+            if party in self._day_balances[target_date_str]:
+                return self._day_balances[target_date_str][party]
+        return 0
+
     def _update_current_balance(self, party, amount):
-        if party not in self.balances:
-            self.balances[party] = 0
-        self.balances[party] += amount
-        return self.balances[party]
+        if party not in self._balances:
+            self._balances[party] = 0
+        self._balances[party] += amount
+        return self._balances[party]
 
     def _update_day_balance(self, day, party, amount):
-        b = self.day_balances[day] if day in self.day_balances else {}
+        b = self._day_balances[day] if day in self._day_balances else {}
         b[party] = amount
-        self.day_balances[day] = b
+        self._day_balances[day] = b
 
     def _process_party(self, date, party, amount):
         current_balance = self._update_current_balance(party, amount)
