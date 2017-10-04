@@ -15,7 +15,12 @@ class Ledger(object):
 
     Raises ``LedgerOrderError`` when purchases are not ordered from least to
     most recent.
-    Raises ``LedgerFormatError`` when purchases are not formatted correctly.
+
+    Exposes ``balances`` with final or current balances for all parties.
+    ie: ledger.balances['john']
+
+    Exposes ``day_balances`` with day balances for all parties.
+    ie: ledger.day_balances['2015-01-16']['john']
     """
 
     def __init__(self, file_path):
@@ -53,8 +58,8 @@ class Ledger(object):
 
     def _process_purchase_text(self, purchase):
         [date, payer, payee, amount] = purchase.split(',')
-        xdate = dt.strptime(date, "%Y-%m-%d")
-        if self.last_date and xdate < self.last_date:
+        current_date = dt.strptime(date, "%Y-%m-%d")
+        if self.last_date and current_date < self.last_date:
             raise LedgerOrderError()
         self._process_purchase(date, payer, payee, Decimal(amount))
-        self.last_date = xdate
+        self.last_date = current_date

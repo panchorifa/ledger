@@ -11,7 +11,7 @@ Processes purchases from ledger file in the following format:
 ### Setup
 
 ```
-	pip install -r requirements_dev.txt;
+pip install -r requirements_dev.txt;
 ```
 
 ### Testing
