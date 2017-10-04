@@ -45,13 +45,13 @@ class Ledger(object):
 
     def day_balance(self, day, party):
         """
-        Exposes final or current balance for the given party.
-        ie: ledger.balance('john')
+        Exposes balance for the given date/party.
+        ie: ledger.balance('2015-01-16', 'john')
 
         Returns last balance for any future dates outside the known
         transaction dates.
 
-        :param day: day date with format 'YYYY-mm-dd'
+        :param day: date with format 'YYYY-mm-dd'
         :param party: desired party
         """
         if day in self._day_balances and party in self._day_balances[day]:
