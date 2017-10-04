@@ -24,3 +24,5 @@ Then check `test_results/coverage/index.html` for the HTML report.
 
 
 ### REPL
+
+![](https://github.com/panchorifa/ledger/blob/master/docs/repl.png)
